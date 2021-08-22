@@ -54,7 +54,33 @@ namespace ProtoBuf.Data.Internal
                     var dataType = (Type)row["DataType"];
                     var protoBufDataType = TypeHelper.GetProtoDataType(dataType);
 
-                    columns.Add(new ProtoDataColumn(columnName, dataType, protoBufDataType));
+                    var columnSize = schemaTable.Columns.Contains("ColumnSize")
+                        ? (int)row["ColumnSize"]
+                        : -1;
+
+                    var columnPrecision = !schemaTable.Columns.Contains("NumericPrecision")
+                        ? (short)-1
+                        : row["NumericPrecision"] != DBNull.Value
+                            ? (short)row["NumericPrecision"]
+                            : (short)-1;
+
+                    var columnScale = !schemaTable.Columns.Contains("NumericScale")
+                        ? (short)-1
+                        : row["NumericScale"] != DBNull.Value
+                            ? (short)row["NumericScale"]
+                            : (short)-1;
+
+                    var dataTypeName = schemaTable.Columns.Contains("DataTypeName")
+                        ? row["DataTypeName"].ToString()
+                        : ((Type)row["DataType"]).Name;
+
+                    columns.Add(new ProtoDataColumn(columnName, dataType, protoBufDataType)
+                    {
+                        ColumnSize = columnSize,
+                        NumericPrecision = columnPrecision,
+                        NumericScale = columnScale,
+                        SourceDataTypeName = dataTypeName
+                    });
                 }
 
                 return columns;

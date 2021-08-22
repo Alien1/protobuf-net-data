@@ -27,6 +27,7 @@
     <PackageTags>binary;serialization;protocol;buffers;protobuf;deserialization;ado.net;ado;data;database</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/dotarj/protobuf-net-data</RepositoryUrl>
+    <AssemblyName>protobuf-net-data-extended-schema</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

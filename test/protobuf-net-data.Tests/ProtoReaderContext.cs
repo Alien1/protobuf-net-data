@@ -14,6 +14,11 @@ namespace ProtoBuf.Data.Tests
         private const int NoneFieldHeader = 0;
         private const int RecordFieldHeader = 3;
 
+        private const int ColumnSizeFieldHeader = 73;
+        private const int ColumnPrecisionFieldHeader = 74;
+        private const int ColumnScaleFieldHeader = 75;
+        private const int ColumnDataTypeNameFieldHeader = 76;
+
         private readonly Stack<SubItemToken> tokens = new Stack<SubItemToken>();
 
         private readonly ProtoReader reader;
@@ -40,12 +45,50 @@ namespace ProtoBuf.Data.Tests
 
         public void ReadUntilField()
         {
+            // this.ReadUntilColumnType();
+            this.ReadUntilDataTypeName();
+
+            // this.reader.ReadInt32();
+            this.reader.ReadString();
+
+            this.ReadExpectedFieldHeader(NoneFieldHeader);
+            this.EndSubItem();
+        }
+
+        public void ReadUntilSize()
+        {
             this.ReadUntilColumnType();
 
             this.reader.ReadInt32();
 
-            this.ReadExpectedFieldHeader(NoneFieldHeader);
-            this.EndSubItem();
+            this.ReadExpectedFieldHeader(ColumnSizeFieldHeader);
+        }
+
+        public void ReadUntilPrecision()
+        {
+            this.ReadUntilSize();
+
+            this.reader.ReadInt32();
+
+            this.ReadExpectedFieldHeader(ColumnPrecisionFieldHeader);
+        }
+
+        public void ReadUntilScale()
+        {
+            this.ReadUntilPrecision();
+
+            this.reader.ReadInt32();
+
+            this.ReadExpectedFieldHeader(ColumnScaleFieldHeader);
+        }
+
+        public void ReadUntilDataTypeName()
+        {
+            this.ReadUntilScale();
+
+            this.reader.ReadInt32();
+
+            this.ReadExpectedFieldHeader(ColumnDataTypeNameFieldHeader);
         }
 
         public void ReadUntilFieldValue()

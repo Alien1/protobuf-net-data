@@ -656,10 +656,16 @@ namespace ProtoBuf.Data
             var columnSize = new DataColumn("ColumnSize", typeof(int)) { DefaultValue = -1 };
             var dataType = new DataColumn("DataType", typeof(Type));
             var dataTypeName = new DataColumn("DataTypeName", typeof(string));
+            var columnPrecision = new DataColumn("NumericPrecision", typeof(short));
+            var columnScale = new DataColumn("NumericScale", typeof(short));
 
             schemaTable.Columns.Add(columnName);
             schemaTable.Columns.Add(columnOrdinal);
             schemaTable.Columns.Add(columnSize);
+
+            schemaTable.Columns.Add(columnPrecision);
+            schemaTable.Columns.Add(columnScale);
+
             schemaTable.Columns.Add(dataType);
             schemaTable.Columns.Add(dataTypeName);
 
@@ -670,7 +676,14 @@ namespace ProtoBuf.Data
                 schemaRow[columnName] = this.context.Columns[ordinal].Name;
                 schemaRow[columnOrdinal] = ordinal;
                 schemaRow[dataType] = this.context.Columns[ordinal].DataType;
-                schemaRow[dataTypeName] = this.context.Columns[ordinal].DataType.Name;
+                schemaRow[dataTypeName] = this.context.Columns[ordinal].SourceDataTypeName;
+                schemaRow[columnSize] = this.context.Columns[ordinal].ColumnSize;
+                schemaRow[columnPrecision] = this.context.Columns[ordinal].NumericPrecision == -1
+                    ? (object)DBNull.Value
+                    : this.context.Columns[ordinal].NumericPrecision;
+                schemaRow[columnScale] = this.context.Columns[ordinal].NumericScale == -1
+                    ? (object)DBNull.Value
+                    : this.context.Columns[ordinal].NumericScale;
 
                 schemaTable.Rows.Add(schemaRow);
             }

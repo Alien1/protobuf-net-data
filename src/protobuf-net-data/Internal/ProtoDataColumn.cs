@@ -10,12 +10,21 @@ namespace ProtoBuf.Data.Internal
         {
             this.Name = name;
             this.DataType = dataType;
+
             this.ProtoDataType = protoBufDataType;
         }
 
         public string Name { get; }
 
         public Type DataType { get; }
+
+        public int ColumnSize { get; set; }
+
+        public int NumericPrecision { get; set; }
+
+        public int NumericScale { get; set; }
+
+        public string SourceDataTypeName { get; set; }
 
         public ProtoDataType ProtoDataType { get; }
     }

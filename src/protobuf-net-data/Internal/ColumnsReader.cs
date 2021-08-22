@@ -12,6 +12,11 @@ namespace ProtoBuf.Data.Internal
         private const int ColumnNameFieldHeader = 1;
         private const int ColumnTypeFieldHeader = 2;
 
+        private const int ColumnSizeFieldHeader = 73;
+        private const int ColumnPrecisionFieldHeader = 74;
+        private const int ColumnScaleFieldHeader = 75;
+        private const int ColumnDataTypeNameFieldHeader = 76;
+
         public static void ReadColumns(ProtoReaderContext context)
         {
             if (context.CurrentFieldHeader != ColumnFieldHeader)
@@ -30,6 +35,10 @@ namespace ProtoBuf.Data.Internal
 
                 var name = ReadColumnName(context);
                 var protoDataType = ReadColumnType(context);
+                var size = ReadColumnSize(context);
+                var precision = ReadColumnPrecision(context);
+                var scale = ReadColumnScale(context);
+                var sdtn = ReadColumnSourceDataTypeName(context);
 
                 // Backwards compatibility or unnecessary?
                 while (context.ReadFieldHeader() != NoneFieldHeader)
@@ -39,7 +48,16 @@ namespace ProtoBuf.Data.Internal
 
                 context.EndSubItem();
 
-                yield return new ProtoDataColumn(name: name, dataType: TypeHelper.GetType(protoDataType), protoBufDataType: protoDataType);
+                yield return new ProtoDataColumn(
+                    name: name,
+                    dataType: TypeHelper.GetType(protoDataType),
+                    protoBufDataType: protoDataType)
+                {
+                    ColumnSize = size,
+                    NumericPrecision = precision,
+                    NumericScale = scale,
+                    SourceDataTypeName = sdtn
+                };
             }
             while (context.ReadFieldHeader() == ColumnFieldHeader);
         }
@@ -56,6 +74,34 @@ namespace ProtoBuf.Data.Internal
             context.ReadExpectedFieldHeader(ColumnTypeFieldHeader);
 
             return (ProtoDataType)context.Reader.ReadInt32();
+        }
+
+        private static int ReadColumnSize(ProtoReaderContext context)
+        {
+            context.ReadExpectedFieldHeader(ColumnSizeFieldHeader);
+
+            return context.Reader.ReadInt32();
+        }
+
+        private static int ReadColumnPrecision(ProtoReaderContext context)
+        {
+            context.ReadExpectedFieldHeader(ColumnPrecisionFieldHeader);
+
+            return context.Reader.ReadInt32();
+        }
+
+        private static int ReadColumnScale(ProtoReaderContext context)
+        {
+            context.ReadExpectedFieldHeader(ColumnScaleFieldHeader);
+
+            return context.Reader.ReadInt32();
+        }
+
+        private static string ReadColumnSourceDataTypeName(ProtoReaderContext context)
+        {
+            context.ReadExpectedFieldHeader(ColumnDataTypeNameFieldHeader);
+
+            return context.Reader.ReadString();
         }
     }
 }
